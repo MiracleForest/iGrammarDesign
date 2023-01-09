@@ -22,7 +22,7 @@ private class Test1
 {
 	public i32 v;
 
-	i32 func()
+	public i32 func()
 	{
 		v = 10; // OK
 		return v; // OK
