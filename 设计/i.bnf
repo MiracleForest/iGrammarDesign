@@ -77,8 +77,10 @@ decl-spec-seq ::= decl-spec
 
 decl-spec ::= type-spec
 
-expression ::= assign-expr
-    | expression "," assign-expr
+expression ::= assign-expr expression'
+
+expression' ::= ["," assign-expr expression']
+
 
 assign-expr ::= conditional-expr assign-expr'
 assign-expr' ::= [assign-operator init-clause assign-expr']
