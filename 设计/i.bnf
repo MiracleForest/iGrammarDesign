@@ -80,11 +80,11 @@ decl-spec ::= type-spec
 expression ::= assign-expr
     | expression "," assign-expr
 
-assign-expr ::= conditional-expr
-    | logical-or-expr assign-operator init-clause
+assign-expr ::= conditional-expr assign-expr'
+assign-expr' ::= [assign-operator init-clause assign-expr']
 
-conditional-expr ::= logical-or-expr
-    | logical-or-expr "?" expression ":" assign-expr
+conditional-expr ::= logical-or-expr conditional-expr'
+conditional-expr' ::= ["?" expression ":" assign-expr conditional-expr']
 
 assign-operator ::= "="
     | "*="
@@ -92,35 +92,35 @@ assign-operator ::= "="
     | "+="
     | "-="
 
-logical-or-expr ::= logical-and-expr
-    | logical-or-expr "||" logical-and-expr
+logical-or-expr ::= logical-and-expr logical-or-expr'
+logical-or-expr' ::= ["||" logical-and-expr logical-or-expr']
 
-logical-and-expr ::= inclusive-or-expr
-    | logical-and-expr "&&" inclusive-or-expr
+logical-and-expr ::= inclusive-or-expr logical-and-expr'
+logical-and-expr' ::= ["&&" inclusive-or-expr logical-and-expr']
 
-inclusive-or-expr ::= exclusive-or-expr
-    | inclusive-or-expr "|" exclusive-or-expr
+inclusive-or-expr ::= exclusive-or-expr inclusive-or-expr'
+inclusive-or-expr' ::= ["|" exclusive-or-expr inclusive-or-expr']
 
-exclusive-or-expr ::= and-expr
-    | exclusive-or-expr "^" and-expr
+exclusive-or-expr ::= and-expr exclusive-or-expr'
+exclusive-or-expr' ::=["^" and-expr exclusive-or-expr']
 
-and-expr ::= equality-expr
-    | and-expr "&" equality-expr
+and-expr ::= equality-expr and-expr'
+and-expr' ::= ["&" equality-expr and-expr']
 
-equality-expr ::= relational-expr
-    | equality-expr ("=="|"!=") relational-expr
+equality-expr ::= relational-expr equality-expr'
+equality-expr' ::= [ ("=="|"!=") relational-expr equality-expr']
 
-relational-expr ::= shift-expr
-    | relational-expr("<"|">"|"<="|">=")shift-expr
+relational-expr ::= shift-expr relational-expr'
+relational-expr' ::= [ ("<"|">"|"<="|">=") shift-expr relational-expr']
 
-shift-expr ::= add-expr
-    | shift-expr ("<<"|">>") add-expr
+shift-expr ::= add-expr shift-expr'
+shift-expr' ::= [ ("<<"|">>") add-expr shift-expr']
 
-add-expr ::= mul-expr
-    | add-expr("+"|"-")mul-expr
+add-expr ::= mul-expr add-expr'
+add-expr' ::= [("+"|"-") mul-expr add-expr']
 
-mul-expr ::= cast-expr
-    |mul-expr ("*"|"/"|"%") cast-expr
+mul-expr ::= cast-expr mul-expr'
+mul-expr' ::= [ ("*"|"/"|"%" ) cast-expr mul-expr']
 
 cast-expr ::= unary-expr
     | "("  type-id ")" cast-expr
@@ -135,10 +135,11 @@ unary-operator ::= "*"
     | "!"
     | "~"
 
-init-decl-list ::= init-decl
-    | init-decl-list "," init-decl
 
-init-decl ::= declarator [initializer]
+init-decl-list ::= init-decl init-decl-list'
+init-decl-list' ::= ["," init-decl init-decl-list']
+
+init-decl ::= declarator initializer
 
 declarator ::= identifier
 
@@ -147,8 +148,8 @@ initializer ::= "=" init-clause
 
 expr-list ::= init-list
 
-init-list ::= init-clause
-    | init-list "," init-clause
+init-list ::= init-clause init-list'
+init-list' ::= ["," init-clause init-list']
 
 init-clause ::= assign-expr
 
@@ -158,17 +159,21 @@ condition ::= expression
 init-stmt ::= expr-stmt
     | decl-stmt
 
-import-target ::= identifier {"." identifier}
+import-target ::= identifier import-target'
+
+import-target' ::= ["." identifier import-target']
 
 import ::= "import" import-target ";"
 
 function ::= func-head func-body
 
-func-head ::= data-type identifier "(" [param-list] ")"
+func-head ::= data-type identifier "(" param-list ")"
+
+param-list ::= [data-type name param-list']
+
+param-list' ::= ["," data-type name param-list']
 
 func-body ::= compound-stmt
-
-param-list ::= data-type [name] {"," data-type [name]}
 
 integer-literal ::= decimal-literal
 
@@ -178,13 +183,15 @@ primary-expr ::= literal
 
 literal ::= integer-literal
     | char-literal
-    | floating-point-literal
+    | floating-
+    point-literal
     | string-literal
     | boolean-literal
 
-postfix-expr ::= primary-expr
-    | postfix-expr "(" [expr-list] ")"
-    | type-spec "(" [expr-list] ")"
+postfix-expr ::= primary-expr [postfix-expr']
+
+postfix-expr' ::= "(" expr-list ")" postfix-expr'
+    | type-spec "(" expr-list ")" postfix-expr'
 
 char-literal ::= "'"
     | nondigit|digit
@@ -218,12 +225,18 @@ char-literal ::= "'"
     | "["
     | "]"
 
-floating-point-literal ::= digit-seq {"." digit-seq}
+floating-point-literal ::= digit-seq floating-point-literal'
 
-digit-seq ::= digit
-    |  digit-seq ["'"] digit
-    
-string-literal ::= double_quote {" "|char-literal} double_quote
+floating-point-literal' ::= ["." digit-seq]
+
+digit-seq ::= digit digit-seq'
+    | digit-seq' digit
+
+digit-seq' ::= ["'" digit digit-seq']
+
+string-literal ::= double_quote string-literal' double_quote
+
+string-literal' ::= [ " " char-literal string-literal']
 
 boolean-literal ::= "false"
     | "true"
