@@ -47,8 +47,8 @@ type-spec ::= identifier
 
 compound-stmt ::= "{" [stmt-seq] "}"
 
-stmt-seq ::= statement
-    | stmt-seq statement
+stmt-seq ::= statement stmt-seq'
+stmt-seq' ::= [ statement stmt-seq' ]
 
 statement ::= expr-stmt
     | compound-stmt
