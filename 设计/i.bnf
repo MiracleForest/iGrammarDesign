@@ -23,7 +23,8 @@ nondigit ::= "a"|"b"|"c"|"d"|"e"|"f"|"g"|"h"|"i"|"g"|"k"|"l"|"m"|"n"|"o"|"p"|"q"
     | "_"
 
 identifier ::= id-start identifier'
-identifier' ::= [id-continue identifier']
+identifier' ::= id-continue identifier'
+              | ε
 
 id-start ::= nondigit
 
@@ -31,7 +32,8 @@ id-continue ::= digit
     | id-start
 
 decimal-literal ::= nonzero-digit decimal-literal'
-decimal-literal' ::= [ "'" digit decimal-literal']
+decimal-literal' ::=  "'" digit decimal-literal'
+                  | ε
 
 nonzero-digit ::= "1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"
 
@@ -48,7 +50,9 @@ type-spec ::= identifier
 compound-stmt ::= "{" [stmt-seq] "}"
 
 stmt-seq ::= statement stmt-seq'
-stmt-seq' ::= [ statement stmt-seq' ]
+
+stmt-seq' ::= ε
+    | stmt-seq statement
 
 statement ::= expr-stmt
     | compound-stmt
@@ -63,30 +67,41 @@ data-type ::= "i32"
 
 expr-stmt ::= [expression] ";"
 
-selection-stmt ::= "if" "(" condition ")" statement
-    | "if" "(" condition ")" statement "else" statement
-
+selection-stmt ::= "if" "(" condition ")" statement selection-stmt'
+    
+selection-stmt' ::= ε
+    | "else" statement
+    
 iteration-stmt ::= "for" "(" init-stmt [condition] ";" [expression] ")" statement
-
+    
 jump-stmt ::= "return" [expression] ";"
 
-decl-stmt ::= decl-spec-seq [init-decl-list] ";"
+decl-stmt ::= decl-spec init-decl-list'; 
 
-decl-spec-seq ::= decl-spec
-    | decl-spec decl-spec-seq
+init-decl-list' ::= ε
+    | "," init-decl-list
 
 decl-spec ::= type-spec
 
+decl-spec-seq ::= decl-spec decl-spec-seq'
+
+decl-spec-seq' ::= ε
+    | decl-spec decl-spec-seq'
+
 expression ::= assign-expr expression'
 
-expression' ::= ["," assign-expr expression']
-
+expression' ::= ε
+    | "," assign-expr expression'
 
 assign-expr ::= conditional-expr assign-expr'
-assign-expr' ::= [assign-operator init-clause assign-expr']
+
+assign-expr' ::= ε
+    | assign-operator init-clause assign-expr'
 
 conditional-expr ::= logical-or-expr conditional-expr'
-conditional-expr' ::= ["?" expression ":" assign-expr conditional-expr']
+
+conditional-expr' ::= ε
+    | "?" expression ":" assign-expr conditional-expr'
 
 assign-operator ::= "="
     | "*="
@@ -95,75 +110,107 @@ assign-operator ::= "="
     | "-="
 
 logical-or-expr ::= logical-and-expr logical-or-expr'
-logical-or-expr' ::= ["||" logical-and-expr logical-or-expr']
+
+logical-or-expr' ::= ε
+    | "||" logical-and-expr logical-or-expr'
 
 logical-and-expr ::= inclusive-or-expr logical-and-expr'
-logical-and-expr' ::= ["&&" inclusive-or-expr logical-and-expr']
+
+logical-and-expr' ::= ε
+    | "&&" inclusive-or-expr logical-and-expr'
 
 inclusive-or-expr ::= exclusive-or-expr inclusive-or-expr'
-inclusive-or-expr' ::= ["|" exclusive-or-expr inclusive-or-expr']
+
+inclusive-or-expr' ::= "|" exclusive-or-expr inclusive-or-expr'
+                      | ε
 
 exclusive-or-expr ::= and-expr exclusive-or-expr'
-exclusive-or-expr' ::=["^" and-expr exclusive-or-expr']
+
+exclusive-or-expr' ::= "^" and-expr exclusive-or-expr'
+                      | ε
 
 and-expr ::= equality-expr and-expr'
-and-expr' ::= ["&" equality-expr and-expr']
+
+and-expr' ::= "&" equality-expr and-expr'
+            | ε
 
 equality-expr ::= relational-expr equality-expr'
-equality-expr' ::= [ ("=="|"!=") relational-expr equality-expr']
+
+equality-expr' ::= "==" relational-expr equality-expr'
+                  | "!=" relational-expr equality-expr'
+                  | ε
 
 relational-expr ::= shift-expr relational-expr'
-relational-expr' ::= [ ("<"|">"|"<="|">=") shift-expr relational-expr']
+
+relational-expr' ::= "<" shift-expr relational-expr'
+                    | ">" shift-expr relational-expr'
+                    | "<=" shift-expr relational-expr'
+                    | ">=" shift-expr relational-expr'
+                    | ε
 
 shift-expr ::= add-expr shift-expr'
-shift-expr' ::= [ ("<<"|">>") add-expr shift-expr']
+
+shift-expr' ::= "<<" add-expr shift-expr'
+               | ">>" add-expr shift-expr'
+               | ε
 
 add-expr ::= mul-expr add-expr'
-add-expr' ::= [("+"|"-") mul-expr add-expr']
+
+add-expr' ::= "+" mul-expr add-expr'
+            | "-" mul-expr add-expr'
+            | ε
 
 mul-expr ::= cast-expr mul-expr'
-mul-expr' ::= [ ("*"|"/"|"%" ) cast-expr mul-expr']
+
+mul-expr' ::= "*" cast-expr mul-expr'
+            | "/" cast-expr mul-expr'
+            | "%" cast-expr mul-expr'
+            | ε
 
 cast-expr ::= unary-expr
-    | "("  type-id ")" cast-expr
+            | "(" type-id ")" cast-expr
 
 unary-expr ::= unary-operator cast-expr
-    | postfix-expr
+              | postfix-expr
 
 unary-operator ::= "*"
-    | "&"
-    | "+"
-    | "-"
-    | "!"
-    | "~"
-
+                  | "&"
+                  | "+"
+                  | "-"
+                  | "!"
+                  | "~"
 
 init-decl-list ::= init-decl init-decl-list'
-init-decl-list' ::= ["," init-decl init-decl-list']
+
+init-decl-list' ::= "," init-decl init-decl-list'
+                   | ε
 
 init-decl ::= declarator initializer
 
 declarator ::= identifier
 
 initializer ::= "=" init-clause
-    | "(" expr-list ")"
+                | "(" expr-list ")"
 
 expr-list ::= init-list
 
 init-list ::= init-clause init-list'
-init-list' ::= ["," init-clause init-list']
+
+init-list' ::= "," init-clause init-list'
+               | ε
 
 init-clause ::= assign-expr
 
 condition ::= expression
-    | decl-spec-seq declarator "=" init-clause
+              | decl-spec-seq declarator "=" init-clause
 
 init-stmt ::= expr-stmt
-    | decl-stmt
+              | decl-stmt
 
 import-target ::= identifier import-target'
 
-import-target' ::= ["." identifier import-target']
+import-target' ::= "." identifier import-target'
+                  | ε
 
 import ::= "import" import-target ";"
 
@@ -173,76 +220,52 @@ func-head ::= data-type identifier "(" param-list ")"
 
 param-list ::= [data-type name param-list']
 
-param-list' ::= ["," data-type name param-list']
+param-list' ::= "," data-type name param-list'
+                | ε
 
 func-body ::= compound-stmt
 
 integer-literal ::= decimal-literal
 
 primary-expr ::= literal
-    | "(" expression ")"
-    | identifier
+                  | "(" expression ")"
+                  | identifier
 
 literal ::= integer-literal
-    | char-literal
-    | floating-
-    point-literal
-    | string-literal
-    | boolean-literal
+          | char-literal
+          | floating-point-literal
+          | string-literal
+          | boolean-literal
 
-postfix-expr ::= primary-expr [postfix-expr']
+postfix-expr ::= primary-expr postfix-expr'
 
 postfix-expr' ::= "(" expr-list ")" postfix-expr'
-    | type-spec "(" expr-list ")" postfix-expr'
+                | type-spec "(" expr-list ")" postfix-expr'
+                | ε
 
-char-literal ::= "'"
-    | nondigit|digit
-    | "~"
-    | ","
-    | "|"
-    | "("
-    | ")"
-    | "<"
-    | ">"
-    | "{"
-    | "}"
-    | "+"
-    | "-"
-    | "!"
-    | "@"
-    | "#"
-    | "$"
-    | "%"
-    | "^"
-    | "&"
-    | "*"
-    | "="
-    | "\"
-    | "/"
-    | "?"
-    | "."
-    | "`"
-    | ":"
-    | " "
-    | "["
-    | "]"
+char-literal ::= "'" (nondigit|digit|"~"|","|"|"|"("|")"|"<"|">"|"{"|"}"
+                          |"+"|"-"|"!"|"@"|"#"|"$"|"%"|"^"|"&"|"*"|"="|"\"
+                          |"/"|"?"|"."|"`"|":"|" " | "[" | "]") "'"
 
 floating-point-literal ::= digit-seq floating-point-literal'
 
-floating-point-literal' ::= ["." digit-seq]
+floating-point-literal' ::= "." digit-seq
+                           | ε
 
 digit-seq ::= digit digit-seq'
-    | digit-seq' digit
+            | digit-seq' digit
 
-digit-seq' ::= ["'" digit digit-seq']
+digit-seq' ::= "'" digit digit-seq'
+              | ε
 
 string-literal ::= double_quote string-literal' double_quote
 
-string-literal' ::= [ " " char-literal string-literal']
+string-literal' ::= " " char-literal string-literal'
+                   | ε
 
 boolean-literal ::= "false"
-    | "true"
-    | "Yes"
-    | "No"
-    | "YES"
-    | "NO"
+                    | "true"
+                    | "Yes"
+                    | "No"
+                    | "YES"
+                    | "NO"
