@@ -33,33 +33,59 @@ RecordDecl
 </div>
 
 ```cpp
-
-import i.io;
-
-i32 func(i32 a,i32 b)
+int main(void)
 {
-    return a+b*2;
-}
-
-i32 main(void)
-{
-    i32 a=0;
-    a++;
-
-    if(func(a,__Builtin_console_input_i32()))    {
-        return a;
-    }
-    else{
-        return -1;
-    }
+	int a=0;
+	if(a==2)
+	{
+		int b=a;
+		int c=1;
+	}
+	a+=1;
 }
 ```
 
-**GlobalArea**
-- **ImportStmt**
-  - **Target(BinaryOperatorsExpr)**
-    - **left:** ***i***
-    - **right:** ***io***
-    - **Operator:** ***.***
-- **FunctionDecl**
-  - **Header**D 
+**GlobalArea**  
+  └[**0**]-**FuncDef**  
+        ├**Name**:*main*  
+        ├**ReturnType**\<**Type**:*Type*>  
+        ┊  ├**Type**:*Keyword*  
+        ┊  └**Value**:*int*  
+        ├ParamList  
+        ┊  └Null  
+        └Body\<Type:CompoundStmt>  
+           ├[0]-VarDef  
+           ┊      ├Name:a  
+           ┊      ├Type   
+           ┊  	   ┊  ├Type:Keyword  
+           ┊  	   ┊  └Value:int   
+           ┊      └Value\<Type:IntegerLiteral>   
+           ┊          └Value:0   
+           ├[1]-IfStmt  
+	       ┊		├Condition\<Type:BinOp>  
+	       ┊		┊  ├Left\<Type:Id>  
+	       ┊		┊  ┊  └Value=a  
+	       ┊		┊  ├Right\<Type:IntegerLiteral>  
+	       ┊		┊  ┊  └Value:2  
+	       ┊		┊  └Op:==  
+	       ┊		└Body\<Type:CompoundStmt>  
+	       ┊		    ├[0]-VarDef  
+	       ┊		    ┊      ├Name:b  
+           ┊           ┊      ├Type  
+           ┊           ┊      ┊  ├Type:Keyword  
+           ┊           ┊      ┊  └Value:int  
+           ┊           ┊      └Value\<Type:Id>  
+           ┊           ┊          └Value:a  
+           ┊           └[1]-VarDef  
+           ┊                   ├Name:c  
+           ┊                   ├Type  
+           ┊              	    ┊  ├Type:Keyword  
+           ┊              	    ┊  └Value:int  
+           ┊                   └Value\<Type:IntegerLiteral>  
+           ┊                       └Value:1  
+           └[2]-BinOp  
+                  ├Left\<Type:Id>  
+			      ┊  └Value=a  
+		    	  ├Right\<Type:IntegerLiteral>  
+			      ┊  └Value:1  
+			      └Op:+=  
