@@ -46,24 +46,24 @@ int main(void)
 ```
 
 **GlobalArea**  
-  └[**0**]-**FuncDef**  
-        ├**Name**:*main*  
-        ├**ReturnType**\<**Type**:*Type*>  
-        ┊  ├**Type**:*Keyword*  
-        ┊  └**Value**:*int*  
-        ├ParamList  
-        ┊  └Null  
-        └Body\<Type:CompoundStmt>  
-           ├[0]-VarDef  
-           ┊      ├Name:a  
-           ┊      ├Type   
-           ┊  	   ┊  ├Type:Keyword  
-           ┊  	   ┊  └Value:int   
-           ┊      └Value\<Type:IntegerLiteral>   
-           ┊          └Value:0   
-           ├[1]-IfStmt  
-	       ┊		├Condition\<Type:BinOp>  
-	       ┊		┊  ├Left\<Type:Id>  
+　└[**0**]-**FuncDef**  
+　　　　├**Name**:*main*  
+　　　　├**ReturnType**\<**Type**:*Type*>  
+　　　　┊　├**Type**:*Keyword*  
+　　　　┊　└**Value**:*int*  
+　　　　├ParamList  
+　　　　┊　└Null  
+　　　　└Body\<Type:CompoundStmt>  
+　　　　　　├[0]-VarDef  
+　　　　　　┊　　　├Name:a  
+　　　　　　┊　　　├Type   
+　　　　　　┊　　　┊　├Type:Keyword  
+　　　　　　┊　　　┊　└Value:int   
+　　　　　　┊　　　└Value\<Type:IntegerLiteral>   
+　　　　　　┊　　　　　└Value:0   
+　　　　　　├[1]-IfStmt  
+　　　　　　┊　　　├Condition\<Type:BinOp>  
+　　　　　　┊　　　┊　├Left\<Type:Id>  
 	       ┊		┊  ┊  └Value=a  
 	       ┊		┊  ├Right\<Type:IntegerLiteral>  
 	       ┊		┊  ┊  └Value:2  
